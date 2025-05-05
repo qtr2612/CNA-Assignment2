@@ -171,19 +171,15 @@ void A_timerinterrupt(void)
   if (TRACE > 0)
     printf("----A: time out,resend packets!\n");
 
-    /* Resend only the unacknowledged packets in the window */
-    for (i = 0; i < windowcount; i++) {
-        int packetIndex = (windowfirst + i) % WINDOWSIZE;
-        if (!isAcked[packetIndex]) {  // Only retransmit unacknowledged packets
-            if (TRACE > 0)
-                printf("---A: resending packet %d\n", buffer[packetIndex].seqnum);
-            tolayer3(A, buffer[packetIndex]);
-            packets_resent++;
-        }
-    }
+  for(i=0; i<windowcount; i++) {
 
-    /* Restart the timer for the first unacknowledged packet in the window */
-    starttimer(A, RTT);
+    if (TRACE > 0)
+      printf ("---A: resending packet %d\n", (buffer[(windowfirst+i) % WINDOWSIZE]).seqnum);
+
+    tolayer3(A,buffer[(windowfirst+i) % WINDOWSIZE]);
+    packets_resent++;
+    if (i==0) starttimer(A,RTT);
+  }
 }
 
 
