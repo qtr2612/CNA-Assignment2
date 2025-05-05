@@ -115,7 +115,7 @@ void process_ack(struct pkt packet, int *ackcount) {
   int seqfirst = buffer[windowfirst].seqnum;
   int seqlast = buffer[windowlast].seqnum;
 
-  // Check if the received ACK is within the window range
+  /* Check if the received ACK is within the window range */
   if (((seqfirst <= seqlast) && (packet.acknum >= seqfirst && packet.acknum <= seqlast)) ||
       ((seqfirst > seqlast) && (packet.acknum >= seqfirst || packet.acknum <= seqlast))) {
       
@@ -124,7 +124,7 @@ void process_ack(struct pkt packet, int *ackcount) {
       
       new_ACKs++;
 
-      // Calculate how many packets are acknowledged
+      /* Calculate how many packets are acknowledged */
       if (packet.acknum >= seqfirst)
           *ackcount = packet.acknum + 1 - seqfirst;
       else
@@ -133,15 +133,15 @@ void process_ack(struct pkt packet, int *ackcount) {
 }
 
 void update_window_and_timer(int ackcount) {
-  // Slide window by the number of packets acknowledged
+  /* Slide window by the number of packets acknowledged */
   windowfirst = (windowfirst + ackcount) % WINDOWSIZE;
 
-  // Remove acknowledged packets from the window buffer
+  /* Remove acknowledged packets from the window buffer */
   for (int i = 0; i < ackcount; i++) {
       windowcount--;
   }
 
-  // Stop timer and restart if there are more unacknowledged packets
+  /* Stop timer and restart if there are more unacknowledged packets */
   stoptimer(A);
   if (windowcount > 0) {
       starttimer(A, RTT);
@@ -149,15 +149,15 @@ void update_window_and_timer(int ackcount) {
 }
 
 void slide_window_forward() {
-  // Slide window over any consecutive acknowledged slots
+  /* Slide window over any consecutive acknowledged slots */
   while (windowcount > 0 && acked[windowfirst]) {
-      acked[windowfirst] = false;  // Clear for reuse
+      acked[windowfirst] = false;  /* Clear for reuse */
       windowfirst = (windowfirst + 1) % WINDOWSIZE;
       windowcount--; 
-      stoptimer(A);   // Stop the timer for the current window
+      stoptimer(A);   /* Stop the timer for the current window */
 
       if (windowcount > 0) {
-          starttimer(A, RTT);  // Restart timer if necessary
+          starttimer(A, RTT);  /* Restart timer if necessary */
       }
   }
 }
@@ -165,21 +165,21 @@ void slide_window_forward() {
 void A_input(struct pkt packet) {
   int ackcount = 0;
 
-  // Process only if the ACK is not corrupted
+  /* Process only if the ACK is not corrupted */
   if (!IsCorrupted(packet)) {
       if (TRACE > 0)
           printf("----A: uncorrupted ACK %d is received\n", packet.acknum);
       total_ACKs_received++;
 
-      // Check if individual packets have been ACKed
+      /* Check if individual packets have been ACKed */
       if (windowcount != 0) {
           process_ack(packet, &ackcount);
 
           if (ackcount > 0) {
-              // Update window and manage the timer
+              /* Update window and manage the timer */
               update_window_and_timer(ackcount);
               
-              // Slide window forward over acknowledged slots
+              /* Slide window forward over acknowledged slots */
               slide_window_forward();
           }
       } else {
@@ -195,27 +195,25 @@ void A_input(struct pkt packet) {
 /* called when A's timer goes off */
 void A_timerinterrupt(void) {
   if (TRACE > 0) {
-      // Print timeout message
+      /* Print timeout message */
       printf("----A: time out, resend packets!\n");
   }
 
-  // Log the packet sequence number before resending
+  /* Log the packet sequence number before resending */
   int seqnum_to_resend = buffer[windowfirst].seqnum;
   if (TRACE > 0) {
       printf("---A: resending packet %d\n", seqnum_to_resend);
   }
 
-  // Increment resent packet count
+  /* Increment resent packet count */
   packets_resent++;
 
-  // Resend the packet
+  /* Resend the packet */
   tolayer3(A, buffer[windowfirst]);
 
-  // Restart the timer for the next packet
+  /* Restart the timer for the next packet */
   starttimer(A, RTT);
 }
-
-
 
 /* the following routine will be called once (only) before any other */
 /* entity A routines are called. You can use it to do any initialization */
@@ -230,10 +228,10 @@ void A_init(void)
 		     so initially this is set to -1
 		   */
   windowcount = 0;
-  int i;
   for (i = 0; i < WINDOWSIZE; i++)
   acked[i] = false;
 }
+
 
 
 
