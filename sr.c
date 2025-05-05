@@ -116,7 +116,7 @@ void process_ack(struct pkt packet, int *ackcount)
 
 void update_window_and_timer(int ackcount)
 {
-  int i;  
+  int i;  /* Declaration moved to the top */
   
   /* Slide window by the number of packets acknowledged */
   windowfirst = (windowfirst + ackcount) % WINDOWSIZE;
@@ -135,6 +135,9 @@ void update_window_and_timer(int ackcount)
 
 void slide_window_forward()
 {
+  /* Declaration moved to the top of the function */
+  int i;
+
   /* Slide window over any consecutive acknowledged slots */
   while (windowcount > 0 && acked[windowfirst]) {
       acked[windowfirst] = false;  /* Clear for reuse */
@@ -191,7 +194,7 @@ void A_timerinterrupt(void)
   }
 
   /* Log the packet sequence number before resending */
-  int seqnum_to_resend = buffer[windowfirst].seqnum;  
+  int seqnum_to_resend = buffer[windowfirst].seqnum;  /* Declaration moved to the top */
   if (TRACE > 0) {
       printf("---A: resending packet %d\n", seqnum_to_resend);
   }
@@ -228,7 +231,7 @@ void A_init(void)
 static int expectedseqnum; /* the sequence number expected next by the receiver */
 static int B_nextseqnum;   /* the sequence number for the next packets sent by B */
 static struct pkt recvbuf[WINDOWSIZE];
-static bool recvd[WINDOWSIZE]; 
+static bool recvd[WINDOWSIZE]; /* Declaration moved to the top */
 
 void B_input(struct pkt packet)
 {
@@ -312,7 +315,7 @@ void B_init(void)
   expectedseqnum = 0;
   B_nextseqnum = 1;
   int i;
-  for(i = 0; i < WINDOWSIZE; i++) {
+  for (i = 0; i < WINDOWSIZE; i++) {
     recvd[i] = false;
   }
 }
