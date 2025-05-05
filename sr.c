@@ -48,7 +48,7 @@ void A_output(struct msg message)
 
   /* if not blocked waiting on ACK */
   if (windowcount < WINDOWSIZE) {
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1 as per instructions
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----A: New message arrives, send window is not full, send new message to layer3!\n");
     }
 
@@ -66,7 +66,7 @@ void A_output(struct msg message)
     windowcount++;
 
     /* send out packet */
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("Sending packet %d to layer 3\n", sendpkt.seqnum);
     }
     tolayer3(A, sendpkt);
@@ -81,7 +81,7 @@ void A_output(struct msg message)
   }
   /* if blocked, window is full */
   else {
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----A: New message arrives, send window is full\n");
     }
     window_full++;
@@ -96,7 +96,7 @@ void A_input(struct pkt packet)
 
   /* if received ACK is not corrupted */
   if (!IsCorrupted(packet)) {
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----A: uncorrupted ACK %d is received\n", packet.acknum);
     }
     total_ACKs_received++;
@@ -110,7 +110,7 @@ void A_input(struct pkt packet)
           ((seqfirst > seqlast) && (packet.acknum >= seqfirst || packet.acknum <= seqlast))) {
 
         /* packet is a new ACK */
-        if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+        if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
           printf("----A: ACK %d is not a duplicate\n", packet.acknum);
         }
         new_ACKs++;
@@ -135,12 +135,12 @@ void A_input(struct pkt packet)
           starttimer(A, RTT);
       }
     } else {
-      if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+      if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
         printf("----A: duplicate ACK received, do nothing!\n");
       }
     }
   } else {
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----A: corrupted ACK is received, do nothing!\n");
     }
   }
@@ -151,13 +151,13 @@ void A_timerinterrupt(void)
 {
   int i;
 
-  if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+  if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
     printf("----A: time out, resend packets!\n");
   }
 
   for (i = 0; i < windowcount; i++) {
 
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("---A: resending packet %d\n", (buffer[(windowfirst + i) % WINDOWSIZE]).seqnum);
     }
 
@@ -193,7 +193,7 @@ void B_input(struct pkt packet)
 
   /* if not corrupted and received packet is in order */
   if ((!IsCorrupted(packet)) && (packet.seqnum == expectedseqnum)) {
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----B: packet %d is correctly received, send ACK!\n", packet.seqnum);
     }
     packets_received++;
@@ -208,7 +208,7 @@ void B_input(struct pkt packet)
     expectedseqnum = (expectedseqnum + 1) % SEQSPACE;
   } else {
     /* packet is corrupted or out of order resend last ACK */
-    if (TRACE == 1) {  // Changed from TRACE > 0 to TRACE == 1
+    if (TRACE == 1) {  /* Changed from TRACE > 0 to TRACE == 1 */
       printf("----B: packet corrupted or not expected sequence number, resend ACK!\n");
     }
     if (expectedseqnum == 0)
