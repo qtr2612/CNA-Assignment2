@@ -116,11 +116,12 @@ void process_ack(struct pkt packet, int *ackcount)
 
 void update_window_and_timer(int ackcount)
 {
+  int i;  
+  
   /* Slide window by the number of packets acknowledged */
   windowfirst = (windowfirst + ackcount) % WINDOWSIZE;
 
   /* Remove acknowledged packets from the window buffer */
-  int i;
   for (i = 0; i < ackcount; i++) {
     windowcount--;
   }
@@ -135,7 +136,6 @@ void update_window_and_timer(int ackcount)
 void slide_window_forward()
 {
   /* Slide window over any consecutive acknowledged slots */
-  int i;
   while (windowcount > 0 && acked[windowfirst]) {
       acked[windowfirst] = false;  /* Clear for reuse */
       windowfirst = (windowfirst + 1) % WINDOWSIZE;
@@ -191,7 +191,7 @@ void A_timerinterrupt(void)
   }
 
   /* Log the packet sequence number before resending */
-  int seqnum_to_resend = buffer[windowfirst].seqnum;
+  int seqnum_to_resend = buffer[windowfirst].seqnum;  
   if (TRACE > 0) {
       printf("---A: resending packet %d\n", seqnum_to_resend);
   }
@@ -228,8 +228,8 @@ void A_init(void)
 static int expectedseqnum; /* the sequence number expected next by the receiver */
 static int B_nextseqnum;   /* the sequence number for the next packets sent by B */
 static struct pkt recvbuf[WINDOWSIZE];
+static bool recvd[WINDOWSIZE]; 
 
-/* called from layer 3, when a packet arrives for layer 4 at B*/
 void B_input(struct pkt packet)
 {
     struct pkt sendpkt;
@@ -307,7 +307,6 @@ void B_input(struct pkt packet)
 
 /* the following routine will be called once (only) before any other */
 /* entity B routines are called. You can use it to do any initialization */
-static bool recvd[WINDOWSIZE];
 void B_init(void)
 {
   expectedseqnum = 0;
@@ -318,12 +317,10 @@ void B_init(void)
   }
 }
 
-/* Note that with simplex transfer from a-to-B, there is no B_output() */
 void B_output(struct msg message)
 {
 }
 
-/* called when B's timer goes off */
 void B_timerinterrupt(void)
 {
 }
