@@ -25,7 +25,7 @@
 #define RTT  16.0       /* round trip time.  MUST BE SET TO 16.0 when submitting assignment */
 #define WINDOWSIZE 6    /* the maximum number of buffered unacked packet
                           MUST BE SET TO 6 when submitting assignment */
-#define SEQSPACE 7      /* the min sequence space for GBN must be at least windowsize + 1 */
+#define SEQSPACE 12      /* the min sequence space for GBN must be at least windowsize + 1 */
 #define NOTINUSE (-1)   /* used to fill header fields that are not being used */
 
 /* generic procedure to compute the checksum of a packet.  Used by both sender and receiver
@@ -267,6 +267,18 @@ void B_input(struct pkt packet)
         sendpkt.payload[i] = '0';
     sendpkt.checksum = ComputeChecksum(sendpkt);
     tolayer3(B, sendpkt);
+}
+
+/* the following routine will be called once (only) before any other */
+/* entity B routines are called. You can use it to do any initialization */
+void B_init(void)
+{
+    int i;
+    expectedseqnum = 0;
+    for(i = 0; i < WINDOWSIZE; i++){ 
+      recvd[i] = false;
+    }
+    B_nextseqnum = 1;
 }
 
 /******************************************************************************
