@@ -282,3 +282,4 @@ void B_output(struct msg message)
 void B_timerinterrupt(void)
 {
 }
+
