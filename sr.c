@@ -234,7 +234,6 @@ void A_init(void)
 
 
 
-
 /********* Receiver (B)  variables and procedures ************/
 
 static int expectedseqnum; /* the sequence number expected next by the receiver */
